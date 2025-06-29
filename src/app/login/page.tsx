@@ -39,7 +39,7 @@ export default function LoginPage() {
           router.push("/child")
         }
       }
-    } catch (error) {
+    } catch {
       setError("An error occurred during login")
     } finally {
       setLoading(false)

@@ -1,13 +1,26 @@
 import "next-auth"
 import { Role } from "@prisma/client"
 
+interface ChildProfile {
+  id: string
+  name: string
+  username: string
+  dailyAllowance: number
+  currentTime: number
+  lastReset: Date
+  parentId: string
+  userId?: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
 declare module "next-auth" {
   interface User {
     id: string
     username: string
     role: Role
     email?: string | null
-    childProfile?: any
+    childProfile?: ChildProfile | null
   }
 
   interface Session {
@@ -16,7 +29,7 @@ declare module "next-auth" {
       username: string
       role: Role
       email?: string | null
-      childProfile?: any
+      childProfile?: ChildProfile | null
       name?: string | null
       image?: string | null
     }
@@ -27,6 +40,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     role: Role
     username: string
-    childProfile?: any
+    childProfile?: ChildProfile | null
   }
 } 

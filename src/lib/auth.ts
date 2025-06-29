@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub!
         session.user.role = token.role as Role
         session.user.username = token.username as string
-        session.user.childProfile = token.childProfile as any
+        session.user.childProfile = token.childProfile
       }
       return session
     }

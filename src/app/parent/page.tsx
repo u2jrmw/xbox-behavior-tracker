@@ -224,7 +224,7 @@ export default function ParentDashboard() {
               <form onSubmit={addChild} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Child's Name</Label>
+                    <Label htmlFor="name">Child&apos;s Name</Label>
                     <Input
                       id="name"
                       value={newChild.name}

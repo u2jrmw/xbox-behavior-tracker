@@ -178,7 +178,7 @@ export default function HomePage() {
                 Ready to Start Managing Xbox Time?
               </h3>
               <p className="text-gray-800 mb-6">
-                Create your account and set up your first child's profile in minutes
+                Create your account and set up your first child&apos;s profile in minutes
               </p>
               <Button 
                 onClick={() => router.push("/login")}
