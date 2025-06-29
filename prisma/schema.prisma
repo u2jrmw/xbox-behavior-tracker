@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  password String
+  role     Role   @default(CHILD)
+  email    String?
+  
+  // If this is a parent user
+  children Child[]
+  
+  // If this is a child user
+  childProfile Child? @relation("ChildUser")
+  
+  // Time entries created by this user (only parents can create entries)
+  timeEntries TimeEntry[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Child {
+  id            String @id @default(cuid())
+  name          String
+  username      String @unique
+  dailyAllowance Int    @default(180) // Default 3 hours in minutes
+  currentTime   Int    @default(180)  // Current remaining time in minutes
+  lastReset     DateTime @default(now())
+  
+  // Parent relationship
+  parent        User   @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  parentId      String
+  
+  // Optional relationship to User account (if child has login)
+  user          User?  @relation("ChildUser", fields: [userId], references: [id])
+  userId        String? @unique
+  
+  // Time tracking entries
+  timeEntries   TimeEntry[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model TimeEntry {
+  id        String    @id @default(cuid())
+  amount    Int       // Time change in minutes (negative for deductions, positive for additions)
+  reason    String
+  type      EntryType
+  
+  // Child this entry applies to
+  child     Child     @relation(fields: [childId], references: [id], onDelete: Cascade)
+  childId   String
+  
+  // User who created this entry (parent)
+  createdBy User      @relation(fields: [userId], references: [id])
+  userId    String
+  
+  createdAt DateTime  @default(now())
+}
+
+enum Role {
+  PARENT
+  CHILD
+}
+
+enum EntryType {
+  DEDUCTION
+  ADDITION
+  RESET
+}
