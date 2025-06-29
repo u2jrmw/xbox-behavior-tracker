@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -36,18 +36,7 @@ export default function ChildDashboard() {
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (status === "loading") return
-    
-    if (!session || session.user.role !== "CHILD") {
-      router.push("/login")
-      return
-    }
-
-    fetchChildData()
-  }, [session, status, router])
-
-  const fetchChildData = async () => {
+  const fetchChildData = useCallback(async () => {
     try {
       // Get child profile
       const childResponse = await fetch("/api/children")
@@ -71,7 +60,18 @@ export default function ChildDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [session?.user.id])
+
+  useEffect(() => {
+    if (status === "loading") return
+    
+    if (!session || session.user.role !== "CHILD") {
+      router.push("/login")
+      return
+    }
+
+    fetchChildData()
+  }, [session, status, router, fetchChildData])
 
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60)
@@ -120,7 +120,7 @@ export default function ChildDashboard() {
           <CardContent className="text-center py-8">
             <Gamepad2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Profile Not Found</h3>
-            <p className="text-gray-800 mb-4">Your Xbox time profile hasn't been set up yet. Please ask your parent to create your profile.</p>
+            <p className="text-gray-800 mb-4">Your Xbox time profile hasn&apos;t been set up yet. Please ask your parent to create your profile.</p>
             <Button onClick={() => signOut()}>Sign Out</Button>
           </CardContent>
         </Card>
